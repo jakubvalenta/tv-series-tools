@@ -1,0 +1,5 @@
+#!/usr/bin/env python
+
+import tv_series.find_episode_ids
+if __name__ == '__main__':
+    tv_series.find_episode_ids.find_and_write_episode_ids()

@@ -1,0 +1,5 @@
+#!/usr/bin/env python
+
+import tv_series.download_subs
+if __name__ == '__main__':
+    tv_series.download_subs.download_subs_and_cache_results()
