@@ -124,7 +124,8 @@ def create_super_cut():
             print('  SKIP')
             continue
         if not args.join:
-            clip_file_path = format_clip_file_path(file_path, cut_start, cut_end)
+            clip_file_path = format_clip_file_path(
+                file_path, cut_start, cut_end)
             if os.path.isfile(clip_file_path):
                 print('  SKIP EXISTS')
                 continue
@@ -142,14 +143,16 @@ def create_super_cut():
         if args.change_fps:
             video_sub_clip = video_sub_clip.set_fps(args.change_fps)
         if args.resize_width and args.resize_height:
-            video_sub_clip = video_sub_clip.resize(width=args.resize_width, height=args.resize_height)
-        #subtitles_clip = SubtitlesClip(
-        #    subtitles_path,
-        #    subtitle_generator
-        #)
+            video_sub_clip = video_sub_clip.resize(
+                width=args.resize_width, height=args.resize_height
+            )
+        # subtitles_clip = SubtitlesClip(
+        #     subtitles_path,
+        #     subtitle_generator
+        # )
         composite_clip = video_sub_clip
-        #composite_clip = CompositeVideoClip([video_sub_clip, subtitles_clip])
-        #composite_clips.append(composite_clip)
+        # composite_clip = CompositeVideoClip([video_sub_clip, subtitles_clip])
+        # composite_clips.append(composite_clip)
 
         if args.speed is not None:
             # composite_clip = composite_clip.speedx(factor=args.speed)

@@ -123,8 +123,10 @@ def format_subs(subs, color=True):
         formatted.append('{no}  {text:<80} {start} --> {end}'.format(
             no=abs(no),
             text=parse_sub_text(text),
-            start='{:02d}:{:02d}:{:02d}'.format(sub.start.hours, sub.start.minutes, sub.start.seconds),
-            end='{:02d}:{:02d}:{:02d}'.format(sub.end.hours, sub.end.minutes, sub.end.seconds),
+            start='{:02d}:{:02d}:{:02d}'
+            .format(sub.start.hours, sub.start.minutes, sub.start.seconds),
+            end='{:02d}:{:02d}:{:02d}'
+            .format(sub.end.hours, sub.end.minutes, sub.end.seconds),
         ))
     return '\n'.join(formatted)
 
@@ -154,8 +156,8 @@ def approve_matches(matches):
         print(format_sub_match_with_context(match))
 
         inp = None
-        while inp is None or (inp not in ('y', 'n', 'x', '')
-                          and not re.match(r'^\d{1,2}$', inp)):
+        while inp is None or (inp not in ('y', 'n', 'x', '') and
+                              not re.match(r'^\d{1,2}$', inp)):
             print('Do you like this match? "y" = yes, "n" = no, "x" = ask'
                   ' again next time, "AB" start at line number A and end at B')
             inp = input('--> ')
