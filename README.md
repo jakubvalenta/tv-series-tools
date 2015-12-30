@@ -10,6 +10,7 @@ This software requires Python 2.7. See [Pythons's website](https://www.python.or
 When you have Python 2.7 installed, install required packages with pip (Python's package management system):
 
 ```
+pip2 install listio
 pip2 install requests
 pip2 install imdbpy
 pip2 install "git+https://github.com/agonzalezro/python-opensubtitles#egg=python-opensubtitles"
@@ -54,7 +55,7 @@ True Detective
 Then call:
 
 ```
-tv-series-find-episode-ids.py -i my_series.txt -o my_episode_ids.txt
+tv-series-find-episode-ids -i my_series.txt -o my_episode_ids.txt
 ```
 
 Episode IDs for all the TV series mentioned in `my_series.txt` will be written to `my_episode_ids.txt` like this:

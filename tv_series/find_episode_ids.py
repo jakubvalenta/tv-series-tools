@@ -1,9 +1,8 @@
 import sys
 
+import listio
 from imdb import IMDb
 from imdb import IMDbDataAccessError
-
-from tv_series import common
 
 
 def find_episode_ids(series_titles, ia):
@@ -62,10 +61,10 @@ def find_and_write_episode_ids():
                         ' file will be added')
     args = parser.parse_args()
 
-    common.write_list_to_file(
+    listio.write_list(
         args.outputfile,
         find_episode_ids(
-            common.read_list_from_file(args.inputfile),
+            listio.read_list(args.inputfile),
             IMDb()
         )
     )

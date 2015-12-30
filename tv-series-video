@@ -1,5 +1,0 @@
-#!/usr/bin/env python
-
-import tv_series.video
-if __name__ == '__main__':
-    tv_series.video.create_super_cut()

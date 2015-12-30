@@ -19,15 +19,14 @@ try:
 except ImportError:
     pass
 
+import listio
 import requests
 from pythonopensubtitles.opensubtitles import OpenSubtitles
 
-from tv_series import common
-
 
 DEFAULT_TIMEOUT = 15
-FILE_NAME_DOWNLOADED = 'episode_ids_downloaded.txt'
-FILE_NAME_ERROR = 'episode_ids_failed.txt'
+FILE_NAME_DOWNLOADED = 'episode_ids_downloaded.csv'
+FILE_NAME_ERROR = 'episode_ids_failed.csv'
 
 
 def _gzip_decompress(s):
@@ -107,17 +106,18 @@ def download_subs_and_cache_results():
     opensub = OpenSubtitles()
     opensub.login(os.environ['OPENSUB_USER'], os.environ['OPENSUB_PASSWD'])
 
-    ids = common.read_list_from_file(args.inputfile)
+    ids = listio.read_list(args.inputfile)
     if args.shuffle:
         random.shuffle(ids)
 
     # Need to call list to make the list concatenation work in Python 2.
-    excl = list(itertools.chain.from_iterable(
-        [common.read_list_from_file(os.path.join(args.cachedir, f))
-         for f in (FILE_NAME_DOWNLOADED, FILE_NAME_ERROR)]
-    ))
+    excl = []
+    for f in (FILE_NAME_DOWNLOADED, FILE_NAME_ERROR):
+        lines = listio.read_map(os.path.join(args.cachedir, f))
+        for line in lines:
+            excl.append(line[0])
 
-    common.write_list_to_file(
+    listio.write_list(
         os.path.join(args.cachedir, FILE_NAME_DOWNLOADED),
         download_subs(
             ids,

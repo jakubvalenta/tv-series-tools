@@ -4,10 +4,9 @@ import re
 import readline
 import sys
 
+import listio
 import pysrt
 from termcolor import colored
-
-from tv_series import common
 
 
 def parse_sub_text(s):
@@ -85,9 +84,10 @@ def iter_subs(dir_path):
             continue
         if not entry.is_file() or not entry.name.endswith('.srt'):
             continue
+        abspath = os.path.abspath(entry.path)
         subs = read_subs(entry.path)
         if subs is not None:
-            yield (entry.path, subs)
+            yield (abspath, subs)
 
 
 def search_subs(subs_dir, excl, regex_list):
@@ -224,17 +224,17 @@ def search_and_approve_subs():
 
     excl = [
         convert_answer_to_match(answer)
-        for answer in common.read_list_from_file(args.outputfile, False)
+        for answer in listio.read_map(args.outputfile)
     ]
     regex_list = [
         compile_regex(pattern)
-        for pattern in common.read_list_from_file(args.patterns)
+        for pattern in listio.read_list(args.patterns)
     ]
     subs_dir = iter_subs(args.inputdir)
     matches_with_context = search_subs(subs_dir, excl, regex_list)
     answers = approve_matches(matches_with_context)
 
-    common.write_list_to_file(args.outputfile, answers)
+    listio.write_map(args.outputfile, answers)
 
     sys.exit()
 
@@ -252,13 +252,13 @@ def check_approved_subs():
                         ' stored')
     args = parser.parse_args()
 
-    answers = common.read_list_from_file(args.inputfile, False)
+    answers = listio.read_map(args.inputfile)
     approved = filter_approved_answers(answers)
     matches = [convert_answer_to_match(answer) for answer in approved]
     matches_with_context = add_subs_context_to_matches(matches, 3)
     new_answers = approve_matches(matches_with_context)
 
-    common.write_list_to_file(args.outputfile, new_answers)
+    listio.write_map(args.outputfile, new_answers)
 
     sys.exit()
 
@@ -273,7 +273,7 @@ def print_approved_subs():
                         help='path to a file with the answers')
     args = parser.parse_args()
 
-    answers = common.read_list_from_file(args.inputfile, False)
+    answers = listio.read_map(args.inputfile)
     approved = filter_approved_answers(answers)
     matches = [convert_answer_to_match(answer) for answer in approved]
     matches_with_context = add_subs_context_to_matches(matches, 3)
