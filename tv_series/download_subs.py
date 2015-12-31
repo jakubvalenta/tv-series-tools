@@ -130,6 +130,8 @@ def download_subs_and_cache_results():
 
     if not os.path.isdir(args.cachedir):
         os.makedirs(args.cachedir)
+    if not os.path.isdir(args.outputdir):
+        os.makedirs(args.outputdir)
 
     write_result(
         os.path.join(args.cachedir, FILE_NAME_DOWNLOADED),
