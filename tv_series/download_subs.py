@@ -116,8 +116,8 @@ def download_subs_and_cache_results():
     opensub.login(os.environ['OPENSUB_USER'], os.environ['OPENSUB_PASSWD'])
 
     movies = listio.read_map(args.inputfile)
-    # if args.shuffle:
-    #     random.shuffle(movies)
+    if args.shuffle:
+        random.shuffle(movies)
 
     excl_ids = []
     for f in (FILE_NAME_DOWNLOADED, FILE_NAME_FAILED):
