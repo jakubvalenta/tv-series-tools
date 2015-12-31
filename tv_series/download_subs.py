@@ -113,9 +113,12 @@ def download_subs_and_cache_results():
     # Need to call list to make the list concatenation work in Python 2.
     excl = []
     for f in (FILE_NAME_DOWNLOADED, FILE_NAME_ERROR):
-        lines = listio.read_map(os.path.join(args.cachedir, f))
-        for line in lines:
-            excl.append(line[0])
+        try:
+            lines = listio.read_map(os.path.join(args.cachedir, f))
+            for line in lines:
+                excl.append(line[0])
+        except FileNotFoundError:
+            pass
 
     listio.write_list(
         os.path.join(args.cachedir, FILE_NAME_DOWNLOADED),
