@@ -25,8 +25,8 @@ from pythonopensubtitles.opensubtitles import OpenSubtitles
 
 
 DEFAULT_TIMEOUT = 15
-FILE_NAME_DOWNLOADED = 'episode_ids_downloaded.csv'
-FILE_NAME_ERROR = 'episode_ids_failed.csv'
+FILE_NAME_DOWNLOADED = 'subtitles_downloaded.csv'
+FILE_NAME_FAILED = 'subtitles_failed.csv'
 
 
 def _gzip_decompress(s):
@@ -39,12 +39,12 @@ def _gzip_decompress(s):
             return f.read()
 
 
-def download_subs(ids, excl, dir_path, opensub, timeout=0):
-    for id in ids:
-        if id in excl:
-            print('IMDB ID SKIPPED {}'.format(id))
+def download_subs(movies, excl_ids, dir_path, opensub, timeout=0):
+    for id, title in movies:
+        print('MOVIE {} {}'.format(id, title))
+        if id in excl_ids:
+            print('  SKIPPED')
             continue
-        print('IMDB ID {}'.format(id))
         try:
             if timeout:
                 time.sleep(timeout)
@@ -60,6 +60,7 @@ def download_subs(ids, excl, dir_path, opensub, timeout=0):
             continue
         if not subs:
             print('  ERROR Subtitles not found')
+            yield (id, None, 'ERROR Subtitles not found')
             continue
         sub = subs[0]
         file_path = os.path.join(dir_path, sub['SubFileName'])
@@ -77,7 +78,15 @@ def download_subs(ids, excl, dir_path, opensub, timeout=0):
         with open(file_path, 'wb') as f:
             print(u'  WRITING {}'.format(file_path))
             f.write(_gzip_decompress(r.content))
-            yield (id, sub['SubFileName'])
+            yield (id, sub['SubFileName'], None)
+
+
+def write_result(file_path_success, file_path_failed, results):
+    for id, sub_file_name, error in results:
+        if error is None:
+            listio.write_map(file_path_success, [(id, sub_file_name)])
+        else:
+            listio.write_map(file_path_failed, [(id, error)])
 
 
 def download_subs_and_cache_results():
@@ -88,7 +97,7 @@ def download_subs_and_cache_results():
         ' by passed IMDB IDs'
     )
     parser.add_argument('--input', '-i', dest='inputfile', required=True,
-                        help='IMDB IDs list file -- one IMDB ID per line')
+                        help='movies CSV file: 1st column = IMDB ID, 2nd column = title')
     parser.add_argument('--output', '-o', dest='outputdir', required=True,
                         help='path to a directory in which the subtitle SRT'
                         ' files will be downloaded')
@@ -106,25 +115,28 @@ def download_subs_and_cache_results():
     opensub = OpenSubtitles()
     opensub.login(os.environ['OPENSUB_USER'], os.environ['OPENSUB_PASSWD'])
 
-    ids = listio.read_list(args.inputfile)
-    if args.shuffle:
-        random.shuffle(ids)
+    movies = listio.read_map(args.inputfile)
+    # if args.shuffle:
+    #     random.shuffle(movies)
 
-    # Need to call list to make the list concatenation work in Python 2.
-    excl = []
-    for f in (FILE_NAME_DOWNLOADED, FILE_NAME_ERROR):
+    excl_ids = []
+    for f in (FILE_NAME_DOWNLOADED, FILE_NAME_FAILED):
         try:
             lines = listio.read_map(os.path.join(args.cachedir, f))
             for line in lines:
-                excl.append(line[0])
+                excl_ids.append(line[0])
         except FileNotFoundError:
             pass
 
-    listio.write_list(
+    if not os.path.isdir(args.cachedir):
+        os.makedirs(args.cachedir)
+
+    write_result(
         os.path.join(args.cachedir, FILE_NAME_DOWNLOADED),
+        os.path.join(args.cachedir, FILE_NAME_FAILED),
         download_subs(
-            ids,
-            excl,
+            movies,
+            excl_ids,
             args.outputdir,
             opensub,
             timeout=args.timeout

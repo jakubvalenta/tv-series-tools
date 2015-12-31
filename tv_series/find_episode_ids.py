@@ -37,7 +37,10 @@ def find_episode_ids(series_titles, ia):
                             episode.movieID,
                             episode['title']
                         ))
-                        yield episode.movieID
+                        yield (
+                            episode.movieID,
+                            episode['long imdb episode title']
+                        )
             except IMDbDataAccessError as e:
                 print(e)
             break
@@ -61,7 +64,7 @@ def find_and_write_episode_ids():
                         ' file will be added')
     args = parser.parse_args()
 
-    listio.write_list(
+    listio.write_map(
         args.outputfile,
         find_episode_ids(
             listio.read_list(args.inputfile),
