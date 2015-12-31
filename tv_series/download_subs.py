@@ -117,6 +117,7 @@ def download_subs_and_cache_results():
 
     movies = listio.read_map(args.inputfile)
     if args.shuffle:
+        movies = list(movies)
         random.shuffle(movies)
 
     excl_ids = []
