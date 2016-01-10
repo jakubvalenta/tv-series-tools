@@ -158,14 +158,18 @@ def approve_matches(matches):
         inp = None
         while inp is None or (inp not in ('y', 'n', 'x', '') and
                               not re.match(r'^\d{1,2}$', inp)):
-            print('Do you like this match? "y" = yes, "n" = no, "x" = ask'
-                  ' again next time, "AB" start at line number A and end at B')
+            print('Do you like this match? "y" = yes, "n" or nothing = no,'
+                  ' "?" = ask again next time, "AB" start at line number A and'
+                  ' end at B')
             inp = input('--> ')
 
-        if inp in ('', 'x'):
+        if inp == '?':
             continue
-        if inp in ('y', 'n'):
-            yes_or_no = inp.upper()
+        if inp in ('', 'y', 'n'):
+            if inp == '':
+                yes_or_no = 'n'
+            else:
+                yes_or_no = inp
             no_start = 0
             no_end = no_start
         elif len(inp) == 1:
