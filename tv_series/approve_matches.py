@@ -90,13 +90,15 @@ def approve_matches(matches, totals=False):
         print(format_sub_match_with_context(match, i=i+1, total=total))
 
         inp = None
-        while inp is None or (inp not in ('y', 'n', 'x', '') and
+        while inp is None or (inp not in ('y', 'n', 'x', 'q', '') and
                               not re.match(r'^\d{1,2}$', inp)):
             print('Do you like this match? "y" = yes, "n" or nothing = no,'
                   ' "?" = ask again next time, "AB" start at line number A and'
-                  ' end at B')
+                  ' end at B, "q" = quit')
             inp = input('--> ')
 
+        if inp == 'q':
+            break
         if inp == '?':
             continue
         if inp in ('', 'y', 'n'):
