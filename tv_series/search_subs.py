@@ -290,4 +290,4 @@ def print_approved_subs():
 
 
 if __name__ == '__main__':
-    seach_and_approve_subs()
+    search_and_approve_subs()
