@@ -2,4 +2,4 @@
 
 import tv_series.search_subs
 if __name__ == '__main__':
-    tv_series.search_subs.search_and_approve_subs()
+    tv_series.search_subs.search_subs_and_save_matches()

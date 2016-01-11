@@ -1,0 +1,5 @@
+#!/usr/bin/env python
+
+import tv_series.approve_matches
+if __name__ == '__main__':
+    tv_series.approve_matches.print_positive_answers()

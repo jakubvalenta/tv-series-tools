@@ -45,12 +45,18 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'tv-series-download-subs=tv_series.download_subs:download_subs_and_cache_results',
-            'tv-series-find-episode-ids=tv_series.find_episode_ids:find_and_write_episode_ids',
-            'tv-series-search-subs=tv_series.search_subs:search_and_approve_subs',
-            'tv-series-chech-approved-subs=tv_series.search_subs:check_approved_subs',
-            'tv-series-print-approved-subs=tv_series.search_subs:print_approved_subs',
-            'tv-series-video=tv_series.video:create_super_cut',
+            'tv-series-download-subs='
+            'tv_series.download_subs:download_subs_and_cache_results',
+            'tv-series-find-episode-ids='
+            'tv_series.find_episode_ids:find_and_write_episode_ids',
+            'tv-series-search-subs='
+            'tv_series.search_subs:search_subs_and_save_matches',
+            'tv-series-matches-approve='
+            'tv_series.approve_matches:approve_matches_and_save_answers',
+            'tv-series-matches-check-approved='
+            'tv_series.approve_matches:check_positive_answers',
+            'tv-series-matches-print-approved='
+            'tv_series.approve_matches:print_positive_answers',
         ],
     },
 )

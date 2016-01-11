@@ -1,5 +1,0 @@
-#!/usr/bin/env python
-
-import tv_series.search_subs
-if __name__ == '__main__':
-    tv_series.search_subs.check_approved_subs()
