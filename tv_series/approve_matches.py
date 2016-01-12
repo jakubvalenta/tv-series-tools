@@ -128,7 +128,7 @@ def approve_matches(matches, totals=False):
         )
 
 
-def filter_approved_answers(answers):
+def filter_positive_answers(answers):
     return (
         answer
         for answer in answers
@@ -136,9 +136,9 @@ def filter_approved_answers(answers):
     )
 
 
-def filter_not_answered_matches(matches, answer_matches):
+def filter_matches(matches, excl):
     for match in matches:
-        if match in answer_matches:
+        if match in excl:
             print('ALREADY ANSWERED "{f}" {s} --> {e}'.format(
                 f=match['file_path'],
                 s=match['time_start'],
@@ -166,16 +166,25 @@ def approve_matches_and_save_answers():
     args = parser.parse_args()
 
     matches_list = listio.read_map(args.inputfile)
-    matches = (common.convert_list_to_match(l) for l in matches_list)
+    matches = (
+        common.convert_list_to_match(l)
+        for l in matches_list
+    )
     answers = listio.read_map(args.outputfile)
     # Using list instead of generator so that we can read it several times.
-    matches_answered = [convert_answer_to_match(answer) for answer in answers]
-    matches_not_answered = filter_not_answered_matches(
+    matches_answered = [
+        convert_answer_to_match(answer)
+        for answer in answers
+    ]
+    matches_not_answered = filter_matches(
         matches,
         matches_answered
     )
     matches_with_context = add_subs_context_to_matches(matches_not_answered, 2)
-    answers = approve_matches(matches_with_context, totals=args.totals)
+    answers = approve_matches(
+        matches_with_context,
+        totals=args.totals
+    )
 
     listio.write_map(args.outputfile, answers)
 
@@ -193,15 +202,36 @@ def check_positive_answers():
     parser.add_argument('--output', '-o', dest='outputfile', required=True,
                         help='path to a file in which the new answers will be'
                         ' stored')
+    parser.add_argument('--totals', '-t', dest='totals', action='store_true',
+                        help='show total number of answers to check,'
+                        ' this will cause that if there are a lot of answers'
+                        ' it will take quite a lot of time before the first'
+                        ' question shows up')
     args = parser.parse_args()
 
     answers = listio.read_map(args.inputfile)
-    approved = filter_approved_answers(answers)
-    matches = (convert_answer_to_match(answer) for answer in approved)
-    matches_with_context = add_subs_context_to_matches(matches, 3)
-    new_answers = approve_matches(matches_with_context)
+    answers_positive = filter_positive_answers(answers)
+    matches_positive = (
+        convert_answer_to_match(answer)
+        for answer in answers_positive
+    )
+    answers_checked = listio.read_map(args.outputfile)
+    # Using list instead of generator so that we can read it several times.
+    new_matches_answered = [
+        convert_answer_to_match(answer)
+        for answer in answers_checked
+    ]
+    matches_not_checked = filter_matches(
+        matches_positive,
+        new_matches_answered
+    )
+    matches_with_context = add_subs_context_to_matches(matches_not_checked, 3)
+    new_answers_checked = approve_matches(
+        matches_with_context,
+        totals=args.totals
+    )
 
-    listio.write_map(args.outputfile, new_answers)
+    listio.write_map(args.outputfile, new_answers_checked)
 
     sys.exit()
 
@@ -217,8 +247,11 @@ def print_positive_answers():
     args = parser.parse_args()
 
     answers = listio.read_map(args.inputfile)
-    approved = filter_approved_answers(answers)
-    matches = (convert_answer_to_match(answer) for answer in approved)
+    approved = filter_positive_answers(answers)
+    matches = (
+        convert_answer_to_match(answer)
+        for answer in approved
+    )
     matches_with_context = add_subs_context_to_matches(matches, 3)
     (
         print(format_sub_match_with_context(match, color=False))
