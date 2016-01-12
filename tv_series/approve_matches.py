@@ -253,10 +253,10 @@ def print_positive_answers():
         for answer in approved
     )
     matches_with_context = add_subs_context_to_matches(matches, 3)
-    (
+    [
         print(format_sub_match_with_context(match, color=False))
         for match in matches_with_context
-    )
+    ]
 
     sys.exit()
 
