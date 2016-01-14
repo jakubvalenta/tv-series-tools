@@ -45,9 +45,25 @@ def read_subs(file_path):
     try:
         return pysrt.open(file_path)
     except UnicodeDecodeError:
-        print(colored('ERROR Failed to parse "{}"'
-                      .format(file_path), 'red'))
+        print(colored('ERROR Failed to parse "{}"'.format(file_path), 'red'))
         return None
+
+
+def get_sub_at(subs, seconds):
+    milliseconds = seconds * 1000
+    srttime = pysrt.SubRipTime(milliseconds=milliseconds + 1)
+    all_subs_at_time = subs.at(srttime)
+    if len(all_subs_at_time):
+        return all_subs_at_time[0]
+    return None
+
+
+def format_sub_time(srttime):
+    return '{:02d}:{:02d}:{:02d}'.format(
+        srttime.hours,
+        srttime.minutes,
+        srttime.seconds
+    )
 
 
 def format_subs(subs, color=True):
@@ -64,9 +80,7 @@ def format_subs(subs, color=True):
         formatted.append('{no}  {text:<80} {start} --> {end}'.format(
             no=abs(no),
             text=parse_sub_text(text),
-            start='{:02d}:{:02d}:{:02d}'
-            .format(sub.start.hours, sub.start.minutes, sub.start.seconds),
-            end='{:02d}:{:02d}:{:02d}'
-            .format(sub.end.hours, sub.end.minutes, sub.end.seconds),
+            start=format_sub_time(sub.start),
+            end=format_sub_time(sub.end)
         ))
     return '\n'.join(formatted)

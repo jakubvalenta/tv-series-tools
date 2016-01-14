@@ -49,7 +49,7 @@ def add_subs_context_to_matches(matches, no=1):
             yield match
 
 
-def format_sub_match_with_context(match, color=True, i=None, total=None):
+def format_match_with_context(match, color=True, i=None, total=None):
     if color:
         file_path_formatted = colored(match['file_path'], attrs=('bold',))
     else:
@@ -80,6 +80,22 @@ def format_sub_match_with_context(match, color=True, i=None, total=None):
     )
 
 
+def format_match_as_clips(match, comment=False):
+    if comment:
+        comment_str = '# '
+    else:
+        comment_str = ''
+    subs = common.read_subs(match['file_path'])
+    sub = common.get_sub_at(subs, match['time_start'])
+    return '{comment}{path};{start};{end};{text}'.format(
+        comment=comment_str,
+        path=match['file_path'],
+        start=common.format_sub_time(sub.start),
+        end=common.format_sub_time(sub.end),
+        text=common.parse_sub_text(sub.text)
+    )
+
+
 def approve_matches(matches, totals=False):
     if totals:
         matches = list(matches)
@@ -87,7 +103,7 @@ def approve_matches(matches, totals=False):
     else:
         total = None
     for i, match in enumerate(matches):
-        print(format_sub_match_with_context(match, i=i+1, total=total))
+        print(format_match_with_context(match, i=i+1, total=total))
 
         inp = None
         while inp is None or (inp not in ('y', 'n', '?', 'q', '') and
@@ -240,10 +256,23 @@ def print_positive_answers():
     import argparse
 
     parser = argparse.ArgumentParser(
-        description='TV Series Tools: Print positive answers with context'
+        description='TV Series Tools: Print positive answers to stdout'
     )
     parser.add_argument('--input', '-i', dest='inputfile', required=True,
                         help='path to a file with the answers')
+    parser.add_argument('--format', '-f', dest='format', required=True,
+                        choices=['clips', 'clips_comment', 'subtitles'],
+                        default='clips',
+                        help='output format, "clips": CSV path,start,end,text;'
+                        ' "clips_comment": same as "clips" but with all lines'
+                        ' prefixed with "# ";'
+                        ' "subtitles": subtitle lines -- the matched one,'
+                        ' 3 before and 3 after;'
+                        ' defaults to "clips"')
+    parser.add_argument('--no-sort', '-ns', dest='nosort', action='store_true',
+                        help='do not sort the results; defaults to false,'
+                        ' which means the results will be sorted by subtitles'
+                        ' file path (case-insensitive)')
     args = parser.parse_args()
 
     answers = listio.read_map(args.inputfile)
@@ -252,11 +281,31 @@ def print_positive_answers():
         convert_answer_to_match(answer)
         for answer in approved
     )
-    matches_with_context = add_subs_context_to_matches(matches, 3)
-    [
-        print(format_sub_match_with_context(match, color=False))
-        for match in matches_with_context
-    ]
+
+    if args.nosort:
+        matches_sorted = matches
+    else:
+        matches_sorted = sorted(matches,
+                                key=lambda match: match['file_path'].lower())
+
+    if args.format == 'clips':
+        [
+            print(format_match_as_clips(match))
+            for match in matches_sorted
+        ]
+    elif args.format == 'clips_comment':
+        [
+            print(format_match_as_clips(match, comment=True))
+            for match in matches_sorted
+        ]
+    elif args.format == 'subtitles':
+        matches_sorted_with_context = add_subs_context_to_matches(
+            matches_sorted, 3
+        )
+        [
+            print(format_match_with_context(match, color=False))
+            for match in matches_sorted_with_context
+        ]
 
     sys.exit()
 
