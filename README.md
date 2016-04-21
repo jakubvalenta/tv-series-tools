@@ -5,7 +5,7 @@
 
 ## Installation
 
-This software requires Python 2.7. See [Pythons's website](https://www.python.org/) for installation instructions.
+This software requires Python 2.7. See [Python's website](https://www.python.org/) for installation instructions.
 
 When you have Python 2.7 installed, install required packages with pip (Python's package management system):
 
@@ -66,7 +66,7 @@ Then call:
 tv-series-find-episode-ids -i my_series.txt -o my_episodes.csv
 ```
 
-Episode IDs for all the TV series mentioned in `my_series.txt` will be written to `my_episode_ids.csv` like this:
+Episode IDs and titles for all the TV series mentioned in `my_series.txt` will be written to `my_episode_ids.csv` like this:
 
 ```
 2510426;"Title of the episode"
@@ -128,7 +128,7 @@ tv-series-matches-print-approved -i my_answers_checked.csv
 
 ## Help
 
-Call any of the scripts mentioned in [Usage](#usage) with the parameter `-h` or `--help` to see full documentation. Example:
+Call any of the executables mentioned in [Usage](#usage) with the parameter `-h` or `--help` to see full documentation. Example:
 
 ```
 tv-series-download-subs -h
