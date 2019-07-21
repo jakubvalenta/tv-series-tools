@@ -5,42 +5,30 @@
 
 ## Installation
 
-This software requires Python 2.7. See [Python's website](https://www.python.org/) for installation instructions.
+### Mac
 
-When you have Python 2.7 installed, install required packages with pip (Python's package management system):
-
-```
-pip2 install listio
-pip2 install requests
-pip2 install imdbpy
-pip2 install "git+https://github.com/agonzalezro/python-opensubtitles#egg=python-opensubtitles"
-pip2 install pysrt
-pip2 install termcolor
-pip2 install moviepy
+``` shell
+$ brew install python
+$ pip install --user --upgrade .
 ```
 
-Then you can call the executables:
+### Arch Linux
 
-```
-./tv-series-download-subs -h
-./tv-series-find-episode-ids -h
-./tv-series-search-subs -h
-./tv-series-matches-approve -h
-./tv-series-matches-check-approved -h
-./tv-series-matches-print-approved -h
+``` shell
+# pacman -S python
+$ pip install --user --upgrade .
 ```
 
-Or you can install this software as a Python package, which will also install all the dependencies and make the executables available globally:
+### Other systems
 
-```
-python2 setup.py install
+Install these dependencies manually:
 
-tv-series-download-subs -h
-tv-series-find-episode-ids -h
-tv-series-search-subs -h
-tv-series-matches-approve -h
-tv-series-matches-check-approved -h
-tv-series-matches-print-approved -h
+- Python 3
+
+Then run:
+
+``` shell
+$ pip install --user --upgrade .
 ```
 
 ## Usage
@@ -49,7 +37,9 @@ This software works in several phases:
 
 ### 1. Find IMDB IDs for all episodes of passed TV series
 
-Create a file containing the names of the TV series you are interested in. One title per line. Empty lines and lines starting with the hash sign (`#`) are ignored. Example:
+Create a file containing the names of the TV series you are interested in. One
+title per line. Empty lines and lines starting with the hash sign (`#`) are
+ignored. Example:
 
 my_series.txt:
 
@@ -78,9 +68,11 @@ Episode IDs and titles for all the TV series mentioned in `my_series.txt` will b
 
 ### 2. Download subtitles for passed IMDB IDs
 
-Sign up at [OpenSubtitles.org](https://www.opensubtitles.org/). Consider buying a VIP account, otherwise you will hit the download limit very soon.
+Sign up at [OpenSubtitles.org](https://www.opensubtitles.org/). Consider buying
+a VIP account, otherwise you will hit the download limit very soon.
 
-Set environment variables `OPENSUB_USER` and `OPENSUB_PASSWD` to contain your OpenSubtitles.org credentials.
+Set environment variables `OPENSUB_USER` and `OPENSUB_PASSWD` to contain your
+OpenSubtitles.org credentials.
 
 ```
 export OPENSUB_USER='you@example.com'
@@ -93,7 +85,8 @@ Then call:
 tv-series-download-subs -i my_episodes.csv -o my_subs/
 ```
 
-All the episodes's subtitles will be downloaded to the directory `my_subs/` as SRT files.
+All the episodes's subtitles will be downloaded to the directory `my_subs/` as
+SRT files.
 
 ### 3. Search downloaded subtitles
 
