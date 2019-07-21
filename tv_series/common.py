@@ -38,8 +38,9 @@ def convert_match_to_list(match):
 
 
 def read_subs(file_path):
+    subs = pysrt.SubRipFile()
     with open(file_path, errors='ignore') as f:
-        subs = list(pysrt.stream(f))
+        subs.read(f)
     return subs
 
 
