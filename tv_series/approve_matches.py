@@ -1,10 +1,15 @@
+import itertools
+import logging
 import math
+import os.path
 import re
 import sys
 
 import listio
 from termcolor import colored
 from tv_series import common
+
+logger = logging.getLogger(__name__)
 
 
 def convert_match_to_answer(match, yes_or_no, start, end):
@@ -37,11 +42,15 @@ def find_subs_context(subs, current, no=1):
 
 def add_subs_context_to_matches(matches, no=1):
     for match in matches:
-        subs = common.read_subs(match['file_path'])
+        path = match['file_path']
+        if not os.path.isfile(path):
+            logger.error('File not found: %s', path)
+            continue
+        subs = common.read_subs(path)
         if subs is None:
             continue
         for i, sub in enumerate(subs):
-            sub_match = common.convert_sub_to_match(match['file_path'], sub)
+            sub_match = common.convert_sub_to_match(path, sub)
             if sub_match != match:
                 continue
             match['subs_context'] = find_subs_context(subs, i, no)
@@ -198,12 +207,15 @@ def approve_matches_and_save_answers():
 
     matches_list = listio.read_map(args.inputfile)
     matches = (common.convert_list_to_match(l) for l in matches_list)
-    answers = listio.read_map(args.outputfile)
+    answers_old = listio.read_map(args.outputfile)
     # Using list instead of generator so that we can read it several times.
-    matches_answered = [convert_answer_to_match(answer) for answer in answers]
+    matches_answered = [
+        convert_answer_to_match(answer) for answer in answers_old
+    ]
     matches_not_answered = filter_matches(matches, matches_answered)
     matches_with_context = add_subs_context_to_matches(matches_not_answered, 2)
-    answers = approve_matches(matches_with_context, totals=args.totals)
+    answers_new = approve_matches(matches_with_context, totals=args.totals)
+    answers = itertools.chain(answers_old, answers_new)
 
     listio.write_map(args.outputfile, answers)
 
