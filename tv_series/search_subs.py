@@ -81,10 +81,13 @@ def search_subs_and_save_matches():
                         help='path to a file with search patterns')
     args = parser.parse_args()
 
-    excl = [
-        common.convert_list_to_match(match)
-        for match in listio.read_map(args.outputfile)
-    ]
+    if os.path.isfile(args.outputfile):
+        excl = [
+            common.convert_list_to_match(match)
+            for match in listio.read_map(args.outputfile)
+        ]
+    else:
+        excl = []
     regex_list = [
         compile_regex(pattern)
         for pattern in listio.read_list(args.patterns)
