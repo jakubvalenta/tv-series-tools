@@ -34,19 +34,13 @@ def convert_list_to_match(l):
 
 
 def convert_match_to_list(match):
-    return (
-        match['file_path'],
-        match['time_start'],
-        match['time_end'],
-    )
+    return (match['file_path'], match['time_start'], match['time_end'])
 
 
 def read_subs(file_path):
-    try:
-        return pysrt.open(file_path)
-    except UnicodeDecodeError:
-        print(colored('ERROR Failed to parse "{}"'.format(file_path), 'red'))
-        return None
+    with open(file_path, errors='ignore') as f:
+        subs = list(pysrt.stream(f))
+    return subs
 
 
 def get_sub_at(subs, seconds):
@@ -60,9 +54,7 @@ def get_sub_at(subs, seconds):
 
 def format_sub_time(srttime):
     return '{:02d}:{:02d}:{:02d}'.format(
-        srttime.hours,
-        srttime.minutes,
-        srttime.seconds
+        srttime.hours, srttime.minutes, srttime.seconds
     )
 
 
@@ -77,10 +69,12 @@ def format_subs(subs, color=True):
             text = colored(sub.text, 'blue')
         else:
             text = sub.text
-        formatted.append('{no}  {text:<80} {start} --> {end}'.format(
-            no=abs(no),
-            text=parse_sub_text(text),
-            start=format_sub_time(sub.start),
-            end=format_sub_time(sub.end)
-        ))
+        formatted.append(
+            '{no}  {text:<80} {start} --> {end}'.format(
+                no=abs(no),
+                text=parse_sub_text(text),
+                start=format_sub_time(sub.start),
+                end=format_sub_time(sub.end),
+            )
+        )
     return '\n'.join(formatted)
